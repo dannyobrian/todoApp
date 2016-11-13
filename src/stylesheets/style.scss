@@ -1,0 +1,8 @@
+@import '../../node_modules/normalize.css/normalize.css';
+@import 'base/variables';
+@import 'routes/_home.scss';
+@import 'components/_header.scss';
+
+.wrapper {
+	background-color: #00d5e4;
+}
