@@ -48,7 +48,7 @@ module.exports = {
         exclude: /node_modules/,
         include: __dirname,
         query: {
-          presets: [ 'react-hmre', 'react', 'es2015' ]
+          presets: [ 'react-hmre', 'react', 'es2015', 'stage-2' ]
         }
       },
       {
@@ -75,7 +75,7 @@ module.exports = {
         loader: "react-templates-loader" 
       },
       {   //send the files directly
-        test: /\.woff$|\.woff2$|\.ttf$|\.eot$|\.wav$|\.mp3$/, 
+        test: /\.woff$|\.woff2$|\.ttf$|\.eot$|\.wav$|\.mp3$/,
         loader: 'file-loader?name=fonts/[name].[ext]'
       }
     ]

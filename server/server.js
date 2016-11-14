@@ -1,6 +1,6 @@
 /* eslint-disable no-console, no-use-before-define */
 
-import Express from 'express'
+var express = require('express')
 import favicon from 'serve-favicon'
 import qs from 'qs'
 
@@ -20,13 +20,14 @@ import App from '../src/components/App'
 import Routes from '../client/routes'
 
 
-const app = new Express();
-const port = 4000;
+const app = express();
+const router = express.Router();
+const port = 5000;
 
 if ( process.env.NODE_ENV == 'production' ) {
   console.log("production mode");
   app.use(compression());
-  app.use('/static', Express.static('dist'));
+  app.use('/static', express.static('dist'));
   app.use(favicon(__dirname + './../static/favicon.png'));
 }
 else {
@@ -37,10 +38,21 @@ else {
   app.use(webpackHotMiddleware(compiler))
 }
 
+app.use('/api', router);
+
+router.route('/save').post((req, res) =>{
+  "use strict";
+    console.log(req);
+    res.json({message: "item saved"});
+});
+
+
 // send all requests to index.html so browserHistory works
-app.get('*', (req, res) => {
+router.get('*', (req, res) => {
   
   var url = req.url;
+
+  // console.log(url);
 
   match({ routes: Routes, location: req.url }, (err, redirect, props) => {
     
@@ -72,11 +84,6 @@ app.get('*', (req, res) => {
       // Grab the initial state from our Redux store
       const finalState = store.getState();
 
-      console.log('*************finalState');
-      console.log(finalState);
-      console.log('*************finalState');
-
-
       // Send the rendered page back to the client
       res.send(renderFullPage(html, finalState));
       
@@ -87,6 +94,8 @@ app.get('*', (req, res) => {
     }
   })
 });
+
+
 
 function renderFullPage(html, preloadedState) {
   return `

@@ -2,12 +2,14 @@ export const ADD_TODO = 'ADD_TODO';
 export const SAVE_TODO = 'SAVE_TODO';
 export const EDIT_TODO = 'EDIT_TODO';
 export const DELETE_TODO = 'DELETE_TODO';
+export const PROMOTE_TODO = 'PROMOTE_TODO';
+export const DEMOTE_TODO = 'DEMOTE_TODO';
 export const COMPLETE_TODO = 'COMPLETE_TODO';
 export const VIEW_INCOMPLETE = 'VIEW_INCOMPLETE';
 export const VIEW_ALL = 'VIEW_ALL';
 
-export function saveTodo(id) {
-  return {type: SAVE_TODO, id: id}
+export function saveTodo(id, data) {
+  return {type: SAVE_TODO, id: id, data: data}
 }
 
 export function addTodo(status=true) {
@@ -20,6 +22,14 @@ export function editTodo(id) {
 
 export function deleteTodo(id) {
   return {type: DELETE_TODO, id:id}
+}
+
+export function promoteTodo(id) {
+  return {type: PROMOTE_TODO, id:id}
+}
+
+export function demoteTodo(id) {
+  return {type: DEMOTE_TODO, id:id}
 }
 
 export function completeTodo(id) {

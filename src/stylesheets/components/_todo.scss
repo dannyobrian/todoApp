@@ -1,0 +1,72 @@
+.Todo {
+	&.completed {
+		opacity: 0.5;
+	}
+}
+
+.TodoList-toolbar {
+	text-align: right;
+	margin-bottom: 10px;
+
+}
+
+.Todo-headerBar {
+	position: relative;
+	.close {
+		position: absolute;
+		right: 10px;
+	}
+}
+
+.Todo-title {
+	display: inline-block;
+	margin: 0;
+	font-weight:bold;
+	.completed & {
+		text-decoration: line-through;
+	}
+}
+
+.Todo-text {
+	.completed & {
+		text-decoration: line-through;
+	}
+}
+
+.Todo-editButtonContainer {
+	text-align: right;
+	margin-top: 10px;
+}
+
+.Todo-completeCheckbox {
+	width: 24px;
+	height: 24px;
+}
+
+.TodoList-viewSelect {
+	display: inline-block;
+	vertical-align: top;
+	width: 100px;
+	height: 30px;
+	margin: 0 10px;
+}
+
+.Todo-addButton {
+	height: 29px;
+	margin: -1px 0 0 0;
+}
+
+.Todo-cancelButton {
+	height: 30px;
+	margin: 0 10px;
+}
+
+.Todo-editButton {
+	height: 30px;
+	margin: -1px 10px 0;
+}
+
+.Todo-editButtonContainer {
+	vertical-align: top;
+}
+
