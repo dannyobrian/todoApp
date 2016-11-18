@@ -1,7 +1,7 @@
 # Todo App front end
 
 ##Description
-This is a simple Todo app with dynamic Aria tagging for site readers such as JAWS. CSS is based on Bootstrap and compiled using SASS, Custom CSS follows the [SUITCSS](https://github.com/suitcss/suit/blob/master/doc/naming-conventions.md) naming convention scheme.
+This is a simple Todo app built in ReactJS/Redux with dynamic Aria tagging for site readers such as JAWS. CSS is based on Bootstrap and compiled using SASS, Custom CSS follows the [SUITCSS](https://github.com/suitcss/suit/blob/master/doc/naming-conventions.md) naming convention scheme.
 
 It is built on the ReactJS framework using Redux for State management, source files are transpiled using Babel and the Webpack build tool.
 
