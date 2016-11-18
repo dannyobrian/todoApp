@@ -37,7 +37,7 @@ if ( process.env.NODE_ENV == 'production' ) {
 
   console.log("production mode");
   app.use(compression());
-  app.use('/static', express.static('dist'));
+  app.use('/', express.static('dist'));
   app.use(favicon(__dirname + './../static/favicon.png'));
 }
 else {
@@ -133,7 +133,7 @@ function renderFullPage(html, preloadedState) {
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="/static/styles.css">
+        <link rel="stylesheet" href="/styles.css">
         <!--[if IE lt 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-sham.min.js"></script>

@@ -12,22 +12,16 @@ module.exports = function(config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
-
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
 
-
     // list of files / patterns to load in the browser
-    files: [
-      'webpack.tests.js'
-    ],
+    files: ['webpack.tests.js'],
 
 
     // list of files to exclude
-    exclude: [
-    ],
-
+    exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -52,7 +46,7 @@ module.exports = function(config) {
           },
           compress: {
             warnings: false,
-            screw_ie8: true
+            screw_ie8: false
           }
         }),
         new CopyWebpackPlugin([
@@ -74,15 +68,12 @@ module.exports = function(config) {
           {
             test: /\.scss$/,
             loader: ExtractTextPlugin.extract('style', 'css!postcss!sass')
-            //loaders: ['style', 'css', 'postcss', 'autoprefixer-loader', 'sass']
           },
           {
             test: /\.less$/,
             loader: ExtractTextPlugin.extract('style', 'css!postcss!less')
-            //loaders: ['style', 'css', 'autoprefixer-loader', 'less-loader']
-            //loader: 'style-loader!css!less-loader'
           },
-          { //url will convert all images below to inline below 8192k otherwise use the img loader
+          {
             test: /\.(jpe?g|png|gif|svg)$/i,
             loaders: [
               'url?limit=8192',
