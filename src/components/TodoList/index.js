@@ -10,30 +10,50 @@ export default class TodoList extends Component {
     this.completeTodo = this.props.completeTodo.bind(this);
     this.viewAllTodos = this.props.viewAllTodos.bind(this);
     this.viewIncompleteTodos = this.props.viewIncompleteTodos.bind(this);
+    this.setViewFilter = this.props.setViewFilter.bind(this);
+    this.loadInitialState = this.props.loadInitialState.bind(this);
   }
 
-  setVisible = (e) => {
-    switch(e.target.value) {
+  setVisible(filter) {
+    this.setViewFilter(filter);
+    switch(filter) {
       case 'VIEW_ALL':
-        this.viewAllTodos();
+        this.viewAllTodos(filter);
         break;
       case 'VIEW_INCOMPLETE':
-        this.viewIncompleteTodos();
+        this.viewIncompleteTodos(filter);
         break;
     }
   };
+
+  componentWillMount() {
+    this.loadInitialState();
+  }
 
   render () {
     return (
       <div className="TodoList">
         <div className="TodoList-toolbar">
-          <label className="TodoList-viewSelectLabel" aria-lable="display" htmlFor="viewSelect"><span aria-hidden="true">Display:</span></label>
-          <select id="viewSelect" onChange={this.setVisible} className="TodoList-viewSelect form-control">
-            <option value="VIEW_ALL">All</option>
-            <option value="VIEW_INCOMPLETE">Incomplete</option>
-          </select>
-          <button className="Todo-addButton btn btn-default glyphicon glyphicon-plus"
+          <div className="TodoList-viewButtonLabel" aria-label="Change todo display:">Display:</div>
+          <button className={`TodoList-allButton btn btn-default ${this.props.viewFilter == 'VIEW_ALL' ? 'btn-is-active' : ''}`}
                   type="button"
+                  tabIndex="1"
+                  aria-label="View all todos"
+                  aria-pressed={`${this.props.viewFilter == 'VIEW_ALL'}`}
+                  onClick={() => this.setVisible('VIEW_ALL')}>
+            <span aria-hidden="true">All</span>
+          </button>
+          <button className={`TodoList-incompleteButton btn btn-default ${this.props.viewFilter == 'VIEW_INCOMPLETE' ? 'btn-is-active' : ''}`}
+                  type="button"
+                  tabIndex="2"
+                  aria-label="View incomplete todos"
+                  aria-pressed={`${this.props.viewFilter == 'VIEW_INCOMPLETE'}`}
+                  onClick={() => this.setVisible('VIEW_INCOMPLETE')}>
+            <span aria-hidden="true">Incomplete</span>
+          </button>
+          <button className="TodoList-addButton btn btn-default glyphicon glyphicon-plus"
+                  type="button"
+                  tabIndex="3"
                   aria-label="add new todo"
                   onClick={this.addTodo}>
             <span aria-hidden="true" className="hidden">Done</span>
@@ -59,7 +79,7 @@ export const TodoItem = ({edit,visible,complete, ...rest}) => {
   let content = edit ? <TodoItemBodyEdit complete={complete} {...rest}/> : <TodoItemBody complete={complete} {...rest}/>;
 
   return (
-	  <div className={`Todo ${visible ? '' : 'hidden'} ${complete ? 'completed' : ''}`}>
+	  <div className={`Todo ${visible ? '' : 'hidden'} ${complete ? 'completed' : ''}`} aria-hidden={`${!visible}`}>
       {content}
     </div>
   )
@@ -70,7 +90,7 @@ TodoItem.propTypes = {
 };
 
 
-export const TodoItemBody = ({id,title,text,labels,complete,editTodo,deleteTodo,completeTodo,promoteTodo,demoteTodo}) => {
+export const TodoItemBody = ({id,title,text,labels,complete,editTodo,deleteTodo,completeTodo,promoteTodo,demoteTodo,viewFilter}) => {
   return (
     <div className="panel panel-default">
       <div className="Todo-headerBar panel-heading clearfix">
@@ -80,34 +100,34 @@ export const TodoItemBody = ({id,title,text,labels,complete,editTodo,deleteTodo,
                 aria-label="Delete todo">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h4 className="Todo-title pull-left">{title}</h4>
+        <h2 className="Todo-title pull-left">{title}</h2>
       </div>
       <div className="panel-body">
         <div className="Todo-text">{text}</div>
         <div className="Todo-editButtonContainer">
           <button className="Todo-promoteButton btn btn-default btn-sm glyphicon glyphicon-arrow-up"
                   type="button"
-                  aria-label="edit"
+                  aria-label="Promote todo"
                   onClick={() => promoteTodo(id)}>
             <span aria-hidden="true" className="hidden">promote</span>
           </button>
           <button className="Todo-demoteButton btn btn-default btn-sm glyphicon glyphicon-arrow-down"
                   type="button"
-                  aria-label="edit"
+                  aria-label="Demote todo"
                   onClick={() => demoteTodo(id)}>
             <span aria-hidden="true" className="hidden">demote</span>
           </button>
           <button className="Todo-editButton btn btn-default btn-sm glyphicon glyphicon-pencil"
                   type="button"
-                  aria-label="edit"
+                  aria-label="Edit todo"
                   onClick={() => editTodo(id)}>
             <span aria-hidden="true" className="hidden">Edit</span>
           </button>
-          <button className="Todo-completeButton btn btn-default btn-sm"
+          <button className={`Todo-completeButton btn btn-default btn-sm  glyphicon ${!!complete ? 'glyphicon-remove' : 'glyphicon-ok'}`}
                   type="button"
-                  aria-label="edit"
-                  onClick={() => completeTodo(id)}>
-            <span aria-hidden="true">{!!complete ? labels.undo : labels.done}</span>
+                  aria-label={`${!!complete ? labels.undo : labels.done}`}
+                  onClick={() => completeTodo(id, viewFilter)}>
+            <span aria-hidden="true" className="hidden">{!!complete ? labels.undo : labels.done}</span>
           </button>
         </div>
       </div>
@@ -132,15 +152,14 @@ class TodoItemBodyEdit extends Component {
     this.id = this.props.id;
     this.saveTodo = this.props.saveTodo.bind(this);
     this.editTodo = this.props.editTodo.bind(this);
+    this.deleteTodo = this.props.deleteTodo.bind(this);
   }
 
   // save current changes
   saveChanges = (e) => { this.saveTodo(this.props.id, this.content) };
 
   // toggle edit state
-  cancelChanges = (e) => { 
-    this.editTodo(this.props.id)
-  };
+  cancelChanges = (e) => { this.editTodo(this.props.id) };
 
   // update text value
   updateText = (e) => { this.content.text = e.target.value };
@@ -152,7 +171,7 @@ class TodoItemBodyEdit extends Component {
     return(
       <div className="panel panel-default">
         <div className="Todo-headerBar panel-heading clearfix">
-          <button onClick={() => deleteTodo(id)}
+          <button onClick={() => this.deleteTodo(this.id)}
                   type="button"
                   className="close"
                   aria-label="Delete todo">

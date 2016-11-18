@@ -7,7 +7,6 @@
 .TodoList-toolbar {
 	text-align: right;
 	margin-bottom: 10px;
-
 }
 
 .Todo-headerBar {
@@ -19,6 +18,7 @@
 }
 
 .Todo-title {
+	font-size:18px;
 	display: inline-block;
 	margin: 0;
 	font-weight:bold;
@@ -33,14 +33,17 @@
 	}
 }
 
+.Todo-textEditLabel {
+	vertical-align: top;
+}
+
+.Todo-textarea {
+	width: 88%;
+}
+
 .Todo-editButtonContainer {
 	text-align: right;
 	margin-top: 10px;
-}
-
-.Todo-completeCheckbox {
-	width: 24px;
-	height: 24px;
 }
 
 .TodoList-viewSelect {
@@ -51,9 +54,36 @@
 	margin: 0 10px;
 }
 
-.Todo-addButton {
+.TodoList-addButton {
 	height: 29px;
 	margin: -1px 0 0 0;
+}
+
+.TodoList-viewButtonLabel {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.TodoList-incompleteButton {
+	line-height: 1;
+	height: 29px;
+	margin: 1px 10px 0 -1px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.TodoList-allButton {
+	line-height: 1;
+	height: 29px;
+	margin: 1px 0 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.btn-is-active {
+	background-color: #e6e6e6;
+	border-color: #adadad;
 }
 
 .Todo-cancelButton {
@@ -61,9 +91,12 @@
 	margin: 0 10px;
 }
 
+.Todo-promoteButton,
+.Todo-demoteButton,
+.Todo-completeButton,
 .Todo-editButton {
 	height: 30px;
-	margin: -1px 10px 0;
+	margin: -1px 0 0 10px;
 }
 
 .Todo-editButtonContainer {

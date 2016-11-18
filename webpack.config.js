@@ -1,38 +1,37 @@
-var path = require('path');
-var webpack = require('webpack');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-
-// project folder
-var root_folder = path.resolve(__dirname, '.');
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Es3ifyPlugin = require('es3ify-webpack-plugin');
 
 module.exports = {
-  //devtool: 'inline-source-map',
-  devtool: 'cheap-module-source-map',
-  //content: root_folder,
-  entry: [
-    'webpack-hot-middleware/client',
-    './client/index.js'
-  ],
+  entry: {
+    application: ['./client/index.js'],
+    vendor: ["react","react-dom","react-router","redux","redux-thunk", "isomorphic-fetch", "babel-polyfill", "es6-promise", "es5-shim", "console-polyfill"]
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
     publicPath: '/static/'
   },
   plugins: [
+    new Es3ifyPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new ExtractTextPlugin("styles.css"),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify('production')
     }),
+    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
     new webpack.optimize.UglifyJsPlugin({
       output: {
-        comments: false
+        comments: false,
+        beautify: {
+          quote_keys:true
+        }
       },
       compress: {
         warnings: false,
-        screw_ie8: true
+        screw_ie8: false
       }
     }),
     new CopyWebpackPlugin([
@@ -44,12 +43,23 @@ module.exports = {
     loaders: [
       {
         test: /\.(js|jsx)$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/,
         include: __dirname,
         query: {
-          presets: [ 'react-hmre', 'react', 'es2015', 'stage-2' ]
+          presets: ["es2015", "react", "stage-2", "es3"],
+          plugins: [
+            ["transform-es2015-modules-commonjs", { "loose": true }],
+            ["transform-es3-property-literals"],
+            ["transform-es3-member-expression-literals"],
+            ["transform-es3-modules-literals"]
+          ]
         }
+      },
+      {
+        test: /\.(js|jsx)$/,
+        include: /\/node_modules\//,
+        loader: 'es3ify'
       },
       {
         test: /\.scss$/,
@@ -81,6 +91,10 @@ module.exports = {
     ]
   },
   resolve: {
+    modulesDirectories: [
+      'src',
+      'node_modules'
+    ],
     extensions: ['', '.js', '.jsx', '.scss', '.less']
   },
 };

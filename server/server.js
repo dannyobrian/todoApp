@@ -1,13 +1,16 @@
 /* eslint-disable no-console, no-use-before-define */
 
-var express = require('express')
+const express = require('express');
+const jsonfile = require('jsonfile');
+const fs = require('fs');
+
 import favicon from 'serve-favicon'
-import qs from 'qs'
 
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
-import webpackConfig from '../webpack.config'
+// import webpackConfig from '../webpack.config'
+let config = require('../webpack.config');
 
 import React from 'react'
 import { Router, browserHistory, match, RouterContext } from 'react-router'
@@ -24,43 +27,68 @@ const app = express();
 const router = express.Router();
 const port = 5000;
 
+const jsonBody = require('body/json');
+
+const expressLogging = require('express-logging');
+const logger = require('logops');
+app.use(expressLogging(logger));
+
 if ( process.env.NODE_ENV == 'production' ) {
+
   console.log("production mode");
   app.use(compression());
   app.use('/static', express.static('dist'));
   app.use(favicon(__dirname + './../static/favicon.png'));
 }
 else {
+  let config = require('../webpack.config.dev-server');
   // Use this middleware to set up hot module reloading via webpack.
   console.log("development mode");
-  const compiler = webpack(webpackConfig);
-  app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }));
-  app.use(webpackHotMiddleware(compiler))
+  const compiler = webpack(config);
+  app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
+  app.use(webpackHotMiddleware(compiler, {
+    log: console.log
+  }))
+}
+
+if (typeof(window) == 'undefined'){
+  global.window = {};
+}
+
+if (typeof(document) == 'undefined'){
+  global.document = {domain: 'localhost'};
 }
 
 app.use('/api', router);
 
-router.route('/save').post((req, res) =>{
-  "use strict";
-    console.log(req);
-    res.json({message: "item saved"});
+app.post('/api/save',(req,res) => { jsonBody(req, res, (err, body) => {
+  logger.info(body);
+  jsonfile.writeFile('./static/data/data.json', body, {}, (err) => {
+    if (err) {
+      res.json({error: err});
+      logger.warn(err);
+    } else {
+      res.json({success: "data written"});
+    }
+  });
+})});
+
+app.get('/api/data',(req, res) =>{
+  jsonfile.readFile('./static/data/data.json',(err,obj) => {
+    if (err) {
+      logger.warn(err);
+      res.json({error: err});
+    } else {
+      res.json(obj);
+    }
+  });
 });
 
-
 // send all requests to index.html so browserHistory works
-router.get('*', (req, res) => {
+app.get('/', (req, res) => {
   
-  var url = req.url;
-
-  // console.log(url);
-
   match({ routes: Routes, location: req.url }, (err, redirect, props) => {
-    
     let timeStamp = new Date();
-
-    if (typeof(window) == 'undefined'){
-      global.window = {};
-    }
 
     if (err) {
       res.status(500).send(err.message)
@@ -72,8 +100,6 @@ router.get('*', (req, res) => {
 
       // Create a new Redux store instance
       const store = configureStore(initialState);
-      
-      console.log(store);
 
       const html = renderToString(
         <Provider store={store}>
@@ -87,7 +113,7 @@ router.get('*', (req, res) => {
       // Send the rendered page back to the client
       res.send(renderFullPage(html, finalState));
       
-      console.log("Finished Page Request: " + req.url.toString() + " at " + (new Date().getTime() - timeStamp.getTime()) + "ms."  )
+      logger.info("Finished Page Request: " + req.url.toString() + " at " + (new Date().getTime() - timeStamp.getTime()) + "ms."  )
 
     } else {
       res.status(404).send('Not Found')
@@ -108,13 +134,18 @@ function renderFullPage(html, preloadedState) {
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="stylesheet" href="/static/styles.css">
+        <!--[if IE lt 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-sham.min.js"></script>
+        <![endif]>-->
       </head>
       <body>
         <div id="app" style='height:100%;position:relative;'><div>${html}</div></div>
         <script>
           window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState)}
         </script>        
-        <script src="/static/bundle.js"></script>
+        <script src="/vendor.bundle.js"></script>
+        <script src="/bundle.js"></script>
       </body>
     </html>
     `

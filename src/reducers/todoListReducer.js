@@ -1,5 +1,4 @@
 import uuid from 'uuid';
-
 // var used instead of import for older ie compatibility
 var a = require('../components/TodoList/todoListActions');
 
@@ -9,42 +8,24 @@ const todoList = (state, action) => {
   // define default state
   if (!state) {
     state = {
+      viewFilter: "VIEW_INCOMPLETE",
       labels: {
         done: "Mark as done",
         undo: "Mark as undone",
         save: "Save changes",
-        cancel: "Cancel",
+        cancel: "Cancel"
       },
-      todos: [
-        {
-          id: uuid.v4(),
-          complete: false,
-          edit: false,
-          visible: true,
-          title: "1 Get new contract",
-          text: "Get a great new contract with another company, possibly Tesco",
-        },
-        {
-          id: uuid.v4(),
-          complete: false,
-          edit: false,
-          visible: true,
-          title: "2 Get new contract",
-          text: "Get a great new contract with another company, possibly Tesco",
-        },
-        {
-          id: uuid.v4(),
-          complete: false,
-          edit: false,
-          visible: true,
-          title: "3 Get new contract",
-          text: "Get a great new contract with another company, possibly Tesco",
-        }
-      ]
+      todos: []
     }
   }
 
   switch (action.type) {
+    case a.SET_VIEW_FILTER:
+      return Object.assign({}, state, { viewFilter: action.status});
+      break;
+    case a.SET_INITIAL_STATE:
+      return Object.assign({}, state, { todos: action.data});
+      break;
     case a.DELETE_TODO:
     case a.PROMOTE_TODO:
     case a.DEMOTE_TODO:
@@ -67,8 +48,10 @@ const todoList = (state, action) => {
 const todos = (state = [], action) => {
   let i;
   switch (action.type) {
+    case a.SET_INITIAL_STATE:
+      return action.data;
+      break;
     case a.ADD_TODO:
-      console.log('addTodo');
         return [
           {
             id: uuid.v4(),
@@ -76,9 +59,9 @@ const todos = (state = [], action) => {
             edit: true,
             visible: true,
             title: "",
-            text: "",
+            text: ""
           },
-          ...state,
+          ...state
         ];
       break;
     case a.SAVE_TODO:
@@ -97,7 +80,8 @@ const todos = (state = [], action) => {
       return state.map((todo) => {
         if(todo.id == action.id) {
           return Object.assign({}, todo, {
-            complete: !todo.complete
+            complete: !todo.complete,
+            visible: (action.viewFilter == 'VIEW_ALL')
           })
         }
         return todo
@@ -117,9 +101,8 @@ const todos = (state = [], action) => {
       });
       let pCopy = state.slice(0);
       if (p>0){
-        let pSubject = pCopy.slice(p,p+1)[0],
-            pTarget = pCopy.slice(p-1,p)[0];
-        pCopy[p-1] = pSubject;
+        let pTarget = pCopy.slice(p-1,p)[0];
+        pCopy[p-1] = pCopy.slice(p, p + 1)[0];
         pCopy[p] = pTarget;
       }
       return pCopy;
@@ -132,9 +115,8 @@ const todos = (state = [], action) => {
 
       let dCopy = state.slice(0);
       if ((d+1)<state.length){
-        let dSubject = dCopy.slice(d,d+1)[0],
-            dTarget = dCopy.slice(d+1,d+2)[0];
-        dCopy[d+1] = dSubject;
+        let dTarget = dCopy.slice(d+1,d+2)[0];
+        dCopy[d+1] = dCopy.slice(d, d + 1)[0];
         dCopy[d] = dTarget;
       }
       return dCopy;

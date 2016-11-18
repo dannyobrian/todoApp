@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import TodoList from '../components/TodoList'
-import * as a from'../components/TodoList/todoListActions';
+const a = require('../components/TodoList/todoListActions');
 
 const mapStateToProps = (state) => {
 
   return {
+    viewFilter: state.todoList.viewFilter,
     labels: state.todoList.labels,
     todos: state.todoList.todos
   };
@@ -31,14 +32,23 @@ const mapDispatchToProps = (dispatch) => {
     saveTodo: (id,data) => {
       dispatch(a.saveTodo(id,data));
     },
-    completeTodo: (id) => {
-      dispatch(a.completeTodo(id));
+    saveAllTodos: (id,data) => {
+      dispatch(a.saveAllTodos(id,data));
+    },
+    completeTodo: (id, viewFilter) => {
+      dispatch(a.completeTodo(id,viewFilter));
     },
     viewAllTodos: (id) => {
       dispatch(a.viewAllTodos());
     },
     viewIncompleteTodos: (id) => {
       dispatch(a.viewIncompleteTodos());
+    },
+    setViewFilter: (status) => {
+      dispatch(a.setViewFilter(status));
+    },
+    loadInitialState: () => {
+      dispatch(a.loadInitialState());
     },
   }
 };
