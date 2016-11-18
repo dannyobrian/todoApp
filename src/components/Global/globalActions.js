@@ -9,7 +9,7 @@ export function setGlobalLocale(data) {
 
 export function getGlobalLocale() {
   return (dispatch) => {
-    let url = "https://ssl.geoplugin.net/json.gp?k=1GHn5z5EEzeFix25";
+    let url = "https://ssl.geoplugin.net/json.gp?k=[INSERT-YOUR-KEY-HERE]";
     return fetch(url)
       .then(res => res.json())
       .then((res) => {
