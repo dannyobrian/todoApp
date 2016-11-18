@@ -34,3 +34,5 @@ In both cases dev and production builds, the app will be accessible at <http://l
 
 ##Known bugs
 Cross browser tested down to IE9 (there are a node_module compile errors when transpiling down to ES3 for IE<9)  
+
+App will complain about malformed JSON from REST API when in development mode as REST API is only implemented on production mode.
